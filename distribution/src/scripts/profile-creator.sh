@@ -19,9 +19,20 @@
 # Profile creator tool for EI
 #-------------------------------------------------------------------------
 
+PRG="$0"
 
+while [ -h "$PRG" ]; do
+	  ls=`ls -ld "$PRG"`
+	  link=`expr "$ls" : '.*-> \(.*\)$'`
+	  if expr "$link" : '.*/.*' > /dev/null; then
+		 PRG="$link"
+	  else
+		 PRG=`dirname "$PRG"`/"$link"
+	  fi
+done
 
-DIR="$(dirname "${BASH_SOURCE[0]}")"
+# Get standard environment variables
+DIR=`dirname "$PRG"`
 DISTRIBUTION="wso2ei-@product.version@"
 #get the desired profile
 echo "*************************************************************************************"
@@ -207,7 +218,12 @@ then
     for BUNDLE in $DEFAULT_BUNDLES; do
         IFS=',' read -a bundleArray <<< "$BUNDLE"
         JAR=${bundleArray[0]}_${bundleArray[1]}.jar
+        search_dir=${DIR}/../wso2/components/plugins
+        file_count=$(find $search_dir -name $JAR | wc -l)
+        if [[ $file_count -gt 0 ]]
+        then
         cp ${DIR}/../wso2/components/plugins/${JAR} ${DIR}/../wso2/components/tmp_plugins
+        fi
         done
 
     rm -r ${DIR}/../wso2/components/plugins
@@ -216,7 +232,7 @@ fi
 
 echo "Preparing a profile distribution archive."
 cd ${DIR}/../../
-zip -r ${DISTRIBUTION}${PROFILE}.zip ${DISTRIBUTION}/
+zip -r ${DISTRIBUTION}${PROFILE}.zip ${DISTRIBUTION}/ -x *profile-creator*
 
 echo "Profile creation completed successfully."
 exit 0

@@ -922,6 +922,13 @@
                 <include>**/saxon9he.jar</include>
             </includes>
         </fileSet>
+        <!-- added a bps specific endorsed directory. Fix https://wso2.org/jira/browse/ESBJAVA-5118-->
+        <fileSet>
+            <directory>
+                target/wso2carbon-core-${carbon.kernel.version}/lib/endorsed
+            </directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/wso2/lib/bps-endorsed/</outputDirectory>
+        </fileSet>
         <fileSet>
             <directory>./src/resources</directory>
             <outputDirectory>wso2ei-${pom.version}/wso2/lib/</outputDirectory>
@@ -1347,6 +1354,16 @@
                 <exclude>**/*.bat</exclude>
                 <exclude>build.xml</exclude>
             </excludes>
+        </fileSet>
+
+        <fileSet>
+            <directory>src/scripts/</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/wso2/analytics/bin
+            </outputDirectory>
+            <includes>
+                <include>**/carbondump.bat</include>
+                <include>**/carbondump.sh</include>
+            </includes>
         </fileSet>
 
         <fileSet>
@@ -1848,6 +1865,14 @@
             <outputDirectory>wso2ei-${pom.version}/wso2/lib</outputDirectory>
             <includes>
                 <include>org.apache.sandesha2:sandesha2-core:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>wso2ei-${pom.version}/lib</outputDirectory>
+            <includes>
+                <include>org.wso2.andes.wso2:andes-client:jar</include>
+                <include>org.apache.geronimo.specs.wso2:geronimo-jms_1.1_spec:jar</include>
+                <include>org.wso2.securevault:org.wso2.securevault:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
@@ -3505,16 +3530,6 @@
             <fileMode>644</fileMode>
         </file>
         <!--END Analytics JS APIs artifacts -->
-
-        <file>
-            <source>
-                target/wso2carbon-core-${carbon.kernel.version}/lib/endorsed/xalan-2.7.2.wso2v2.jar
-            </source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/wso2/lib/endorsed/</outputDirectory>
-            <!--commented since this tag causes issues in maven assembly plugin when copying zip formats-->
-            <!--filtered>true</filtered-->
-            <fileMode>644</fileMode>
-        </file>
 
         <file>
             <source>

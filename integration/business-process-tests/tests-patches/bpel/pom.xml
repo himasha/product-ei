@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.wso2.ei</groupId>
         <artifactId>wso2bps-integration-patches</artifactId>
-        <version>6.1.2-SNAPSHOT</version>
+        <version>6.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -161,7 +161,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2ei-${project.version}/wso2/business-process/repository/resources/security/
+                                        ${basedir}/target/tobeCopied/wso2ei-${product.ei.version}/repository/resources/security/
                                     </directory>
                                     <includes>
                                         <include>**/*.jks</include>
@@ -182,7 +182,7 @@
                             <resources>
                                 <resource>
                                     <directory>
-                                        ${basedir}/target/tobeCopied/wso2ei-${project.version}/wso2/business-process/repository/resources/security/
+                                        ${basedir}/target/tobeCopied/wso2ei-${product.ei.version}/repository/resources/security/
                                     </directory>
                                     <includes>
                                         <include>**/*.jks</include>

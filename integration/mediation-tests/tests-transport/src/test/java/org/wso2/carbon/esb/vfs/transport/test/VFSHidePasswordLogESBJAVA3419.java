@@ -29,32 +29,14 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 public class VFSHidePasswordLogESBJAVA3419 extends ESBIntegrationTest {
 
-	private ServerConfigurationManager serverConfigurationManager;
-
 	@BeforeClass(alwaysRun = true)
 	public void init() throws Exception {
-		super.init();
-
-		serverConfigurationManager = new ServerConfigurationManager(
-				new AutomationContext("ESB", TestUserMode.SUPER_TENANT_ADMIN));
-		serverConfigurationManager.applyConfiguration(new File(getClass()
-				.getResource(
-						File.separator + "artifacts" + File.separator + "ESB"
-								+ File.separator + "synapseconfig"
-								+ File.separator + "vfsTransport"
-								+ File.separator + "axis2.xml").getPath()));
 		super.init();
 	}
 
 	@AfterClass(alwaysRun = true)
 	public void restoreServerConfiguration() throws Exception {
-		try {
-			super.cleanup();
-		} finally {
-			Thread.sleep(3000);
-			serverConfigurationManager.restoreToLastConfiguration();
-			serverConfigurationManager = null;
-		}
+		super.cleanup();
 	}
 
 	@SetEnvironment(executionEnvironments = { ExecutionEnvironment.STANDALONE })
@@ -76,7 +58,7 @@ public class VFSHidePasswordLogESBJAVA3419 extends ESBIntegrationTest {
 						+ "         <property name=\"OUT_ONLY\" value=\"true\"/>\n"
 						+ "         <send>\n"
 						+ "            <endpoint>\n"
-						+ "               <address uri=\"vfs:smb://username:ClearPassword@host/test/out\"/>\n"
+						+ "               <address uri=\"vfs:smb://username:ClearPassword@localhost/test/out\"/>\n"
 						+ "            </endpoint>\n"
 						+ "         </send>\n"
 						+ "      </outSequence>\n"
@@ -88,9 +70,9 @@ public class VFSHidePasswordLogESBJAVA3419 extends ESBIntegrationTest {
 						+ "   <publishWSDL uri=\"file:samples/service-bus/resources/proxy/sample_proxy_1.wsdl\"/>\n"
 						+ "   <parameter name=\"transport.vfs.ActionAfterProcess\">MOVE</parameter>\n"
 						+ "   <parameter name=\"transport.PollInterval\">1</parameter>\n"
-						+ "   <parameter name=\"transport.vfs.MoveAfterProcess\">vfs:smb://username:ClearPassword@host/test/original</parameter>\n"
-						+ "   <parameter name=\"transport.vfs.FileURI\">vfs:smb://username:ClearPassword@host/test/out</parameter>\n"
-						+ "   <parameter name=\"transport.vfs.MoveAfterFailure\">vfs:smb://username:ClearPassword@host/test/original</parameter>\n"
+						+ "   <parameter name=\"transport.vfs.MoveAfterProcess\">vfs:smb://username:ClearPassword@localhost/test/original</parameter>\n"
+						+ "   <parameter name=\"transport.vfs.FileURI\">vfs:smb://username:ClearPassword@localhost/test/out</parameter>\n"
+						+ "   <parameter name=\"transport.vfs.MoveAfterFailure\">vfs:smb://username:ClearPassword@localhost/test/original</parameter>\n"
 						+ "   <parameter name=\"transport.vfs.FileNamePattern\">.*\\.text</parameter>\n"
 						+ "   <parameter name=\"transport.vfs.ContentType\">text/xml</parameter>\n"
 						+ "   <parameter name=\"transport.vfs.ActionAfterFailure\">MOVE</parameter>\n"
@@ -117,7 +99,7 @@ public class VFSHidePasswordLogESBJAVA3419 extends ESBIntegrationTest {
 						+ "           trace=\"disable\">\n"
 						+ "        <target>\n"
 						+ "            <inSequence>\n"
-						+ "                <header name=\"To\" value=\"vfs:smb://username:ClearPassword@host/test/out\"/>"
+						+ "                <header name=\"To\" value=\"vfs:smb://username:ClearPassword@localhost/test/out\"/>"
 						+ "                <property name=\"OUT_ONLY\" value=\"true\"/>\n"
 						+ "                <property name=\"FORCE_SC_ACCEPTED\" value=\"true\" scope=\"axis2\"/>\n"
 						+ "                <send>\n"

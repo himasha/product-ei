@@ -37,7 +37,7 @@ public class PropertyIntegrationTRANSPORT_HEADERSPropertyTest extends ESBIntegra
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
         init();
-        wireServer = new WireMonitorServer(8991);
+        wireServer = new WireMonitorServer(8996);
         loadESBConfigurationFromClasspath
                 ("/artifacts/ESB/mediatorconfig/property/TRANSPORT_HEADERS.xml");
     }
@@ -49,7 +49,7 @@ public class PropertyIntegrationTRANSPORT_HEADERSPropertyTest extends ESBIntegra
         wireServer.start();
         try {
             axis2Client.addHttpHeader("Test-TRANSPORT_HEADERS","test");
-            axis2Client.sendSimpleStockQuoteRequest(getProxyServiceURLHttp("Axis2ProxyService"),null,"WSO2");
+            axis2Client.sendSimpleStockQuoteRequest(getProxyServiceURLHttp("TRANSPORT_HEADERS_TestProxy"),null,"WSO2");
         } catch (Exception e) {
 
         }

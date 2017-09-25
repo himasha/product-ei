@@ -39,10 +39,7 @@ public class PropertyIntegrationPropertyInTransportScopeTest extends ESBIntegrat
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
         super.init();
-        wireServer = new WireMonitorServer(8991);
-        loadESBConfigurationFromClasspath
-                ("/artifacts/ESB/mediatorconfig/property/transport_scope_property.xml");
-
+        wireServer = new WireMonitorServer(8995);
     }
 
     @SetEnvironment(executionEnvironments = {ExecutionEnvironment.STANDALONE})
@@ -51,11 +48,11 @@ public class PropertyIntegrationPropertyInTransportScopeTest extends ESBIntegrat
 
         wireServer.start();
         try {
-            axis2Client.sendSimpleStockQuoteRequest
-                    (getProxyServiceURLHttp("Axis2ProxyService"),
-                     null,
-                     "WSO2");
+            axis2Client.sendSimpleStockQuoteRequest(
+                    getProxyServiceURLHttp("propertyInTransportScopeTestProxy"), null,
+                    "WSO2");
         } catch (Exception e) {
+            //ignore since wire message is captured
         }
         String response = wireServer.getCapturedMessage();
         assertTrue(response.contains("TransportProperty: testProperty"), "Property not set");

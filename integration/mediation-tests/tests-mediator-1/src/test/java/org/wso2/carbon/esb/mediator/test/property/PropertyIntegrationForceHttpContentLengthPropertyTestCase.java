@@ -44,7 +44,7 @@ public class PropertyIntegrationForceHttpContentLengthPropertyTestCase
     public void setEnvironment() throws Exception {
         super.init();
 
-        wireServer = new WireMonitorServer(8991);
+        wireServer = new WireMonitorServer(8994);
     }
 
     @AfterClass(alwaysRun = true)
@@ -80,7 +80,7 @@ public class PropertyIntegrationForceHttpContentLengthPropertyTestCase
                                                   "   </soapenv:Body>\n" +
                                                   "</soapenv:Envelope>", "text/xml", "UTF-8");
 
-        HttpPost post = new HttpPost(getProxyServiceURLHttp("Axis2ProxyService"));
+        HttpPost post = new HttpPost(getProxyServiceURLHttp("FORCE_HTTP_CONTENT_LENGTH_TrueTestProxy"));
         post.setHeader("SOAPAction","urn:getQuote");
         post.setEntity(strEntity);
 
@@ -119,7 +119,7 @@ public class PropertyIntegrationForceHttpContentLengthPropertyTestCase
                                                   "      </ser:getQuote>\n" +
                                                   "   </soapenv:Body>\n" +
                                                   "</soapenv:Envelope>", "text/xml", "UTF-8");
-        HttpPost post = new HttpPost(getProxyServiceURLHttp("Axis2ProxyService"));
+        HttpPost post = new HttpPost(getProxyServiceURLHttp("FORCE_HTTP_CONTENT_LENGTH_FalseTestProxy"));
         post.setHeader("SOAPAction","urn:getQuote");
         post.setEntity(strEntity);
 

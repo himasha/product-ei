@@ -39,6 +39,9 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -52,10 +55,17 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
     public void init() throws Exception {
         super.init();
         resourceAdminServiceClient = new ResourceAdminServiceClient(contextUrls.getBackEndUrl(), getSessionCookie());
-        URL url = new URL("file:///" + getESBResourceLocation() + File.separator + "mediatorconfig"
+
+        URL stockQuoteSchemaUrl = new URL("file:///" + getESBResourceLocation() + File.separator + "mediatorconfig"
                           + File.separator + "validate" + File.separator + "StockQuoteSchema.json");
         resourceAdminServiceClient.addResource("/_system/config/StockQuoteSchema.json", "application/json", "JSON Schema"
-                , new DataHandler(url));
+                , new DataHandler(stockQuoteSchemaUrl));
+
+        URL url = new URL("file:///" + getESBResourceLocation() + File.separator
+                + "mediatorconfig" + File.separator + "validate" + File.separator + "largeJsonSchema.json");
+        resourceAdminServiceClient.addResource("/_system/config/largeJsonSchema.json",
+                "application/json", "JSON Schema", new DataHandler(url));
+
         loadESBConfigurationFromClasspath("/artifacts/ESB/mediatorconfig/validate/jsonSchemaValidateConfig.xml");
         httpHeaders.put("Content-Type", "application/json");
 
@@ -70,7 +80,7 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
                          "  }" +
                          "}" +
                          "}";
-        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateRequest"))
+        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateMediatorJsonTestProxy"))
                 , payload, httpHeaders);
         Assert.assertTrue((!response.getData().equals("") && response.getData().contains("getQuote"))
                 , "Valid Request failed. Response: " + response.getData());
@@ -84,7 +94,7 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
                          "    \"request\": { \"symbol\": \"WSO2\" }" +
                          "  }" +
                          "}";
-        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateRequestFromRegistry"))
+        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateMediatorJsonSchemaFromRegTestProxy"))
                 , payload, httpHeaders);
         Assert.assertTrue((!response.getData().equals("") && response.getData().contains("getQuote"))
                 , "Valid Request failed. " + response.getData());
@@ -99,7 +109,7 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
                          "  }" +
                          "}" +
                          "}";
-        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateRequest"))
+        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateMediatorJsonTestProxy"))
                 , payload, httpHeaders);
         Assert.assertEquals(response.getResponseCode(), 500, "Response Code mismatched");
         Assert.assertTrue((!response.getData().equals("") && response.getData().contains("Invalid Request"))
@@ -114,7 +124,7 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
                          "    \"request\": { \"symbol1\": \"WSO2\" }" +
                          "  }" +
                          "}";
-        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateRequestFromRegistry"))
+        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateMediatorJsonSchemaFromRegTestProxy"))
                 , payload, httpHeaders);
         Assert.assertEquals(response.getResponseCode(), 500, "Response Code mismatched");
         Assert.assertTrue((!response.getData().equals("") && response.getData().contains("Invalid Request"))
@@ -130,7 +140,7 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
                          "  }" +
                          "}" +
                          "}";
-        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateRequest"))
+        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateMediatorJsonTestProxy"))
                 , payload, httpHeaders);
         Assert.assertEquals(response.getResponseCode(), 500, "Response Code mismatched");
         Assert.assertTrue((!response.getData().equals("") && response.getData().contains("Invalid Request"))
@@ -141,11 +151,73 @@ public class ValidateJSONSchemaTestCase extends ESBIntegrationTest {
                                              " stored in local-entry")
     public void inValidRequestEmptyJSONMessageTest() throws Exception {
         String payload = "{}";
-        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateRequest"))
+        HttpResponse response = doPost(new URL(getProxyServiceURLHttp("validateMediatorJsonTestProxy"))
                 , payload, httpHeaders);
         Assert.assertEquals(response.getResponseCode(), 500, "Response Code mismatched");
         Assert.assertTrue((!response.getData().equals("") && response.getData().contains("Invalid Request"))
                 , "Validation must be failed. Response: " + response.getData());
+    }
+
+    /**
+     * Send a series of valid and invalid requests and see if
+     * validation works in the expected way
+     *
+     * @throws Exception on a test exception
+     */
+    @Test(groups = "wso2.esb", description = "Validating the valid and invalid requests series against the JSON Schema")
+    public void validAndInvalidRequestTest() throws Exception {
+        sendInvalidRequestAndAssert();
+        sendInvalidRequestAndAssert();
+        sendInvalidRequestAndAssert();
+        sendInvalidRequestAndAssert();
+        sendInvalidRequestAndAssert();
+        sendInvalidRequestAndAssert();
+        sendValidRequestAndAssert();
+        sendValidRequestAndAssert();
+    }
+
+    /**
+     * Send a valid request and check the response
+     *
+     * @throws IOException on a communication exception
+     * @throws AutomationFrameworkException on a test framework exception
+     */
+    private void sendValidRequestAndAssert() throws IOException, AutomationFrameworkException {
+        String goodRequest = readFile( getESBResourceLocation() + File.separator
+                + "mediatorconfig" + File.separator + "validate"
+                + File.separator + "validRequest.json");
+        HttpResponse response = doPost(new URL(getApiInvocationURL("validateMediatorJson"))
+                , goodRequest, httpHeaders);
+        Assert.assertTrue((response.getData().contains("success"))
+                , "Validation must be success. Response: " + response.getData());
+    }
+
+    /**
+     * Send an invalid request and check the response
+     *
+     * @throws IOException on a communication exception
+     * @throws AutomationFrameworkException on a test framework exception
+     */
+    private void sendInvalidRequestAndAssert() throws IOException, AutomationFrameworkException {
+        String badRequest = readFile( getESBResourceLocation() + File.separator
+                + "mediatorconfig" + File.separator + "validate"
+                + File.separator + "invalidRequest.json");
+        HttpResponse response = doPost(new URL(getApiInvocationURL("validateMediatorJson"))
+                , badRequest, httpHeaders);
+        Assert.assertTrue((response.getData().contains("fail"))
+                , "Validation must be fail. Response: " + response.getData());
+    }
+
+    /**
+     * Read a file as an string
+     * @param path file path
+     * @return content of the file as a String
+     * @throws IOException on a read communication issue
+     */
+    private String readFile(String path) throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, StandardCharsets.UTF_8);
     }
 
     @AfterClass(alwaysRun = true)

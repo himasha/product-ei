@@ -49,7 +49,7 @@ public class ESBJAVA_3698_MessageBuildingWithDifferentPayloadAndContentTypeTestC
 	public void testAxisFaultWithXmlPayloadAndJSONContentType() throws ClientProtocolException,
 	                                                           IOException, InterruptedException,
                                                                LogViewerLogViewerException {
-		final HttpPost post = new HttpPost("http://localhost:8480/stockquote/test");
+		final HttpPost post = new HttpPost("http://localhost:8480/jsonstockquote/test");
 		post.addHeader("Content-Type", "application/json");
 		post.addHeader("SOAPAction", "urn:getQuote");
 		StringEntity se = new StringEntity(getPayload());
@@ -65,7 +65,7 @@ public class ESBJAVA_3698_MessageBuildingWithDifferentPayloadAndContentTypeTestC
 
         LogEvent[] logs = logViewerClient.getAllRemoteSystemLogs();
         for (int i = 0; i < logs.length; i++) {
-            if (logs[i].getMessage().contains("Could not save JSON payload")) {
+            if (logs[i].getMessage().contains("Error occurred while processing document for application/json")) {
                 isError = true;
                 break;
             }

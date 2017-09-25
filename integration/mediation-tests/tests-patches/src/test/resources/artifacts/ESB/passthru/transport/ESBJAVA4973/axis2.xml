@@ -62,8 +62,8 @@
     <parameter name="ModulesDirectory">axis2modules</parameter>
 
     <!-- User agent and the server details to be used in the http communication -->
-    <parameter name="userAgent" locked="true">WSO2 EI 6.1.1</parameter>
-    <parameter name="server" locked="true">WSO2 EI 6.1.1</parameter>
+    <parameter name="userAgent" locked="true">WSO2 EI 6.2.0</parameter>
+    <parameter name="server" locked="true">WSO2 EI 6.2.0</parameter>
 
     <!-- During a fault, stacktrace can be sent with the fault message. The following flag -->
     <!-- will control that behaviour -->
@@ -332,7 +332,7 @@
         </parameter>
     </transportReceiver-->
 
-    <!--Uncomment this and configure as appropriate for JMS transport support with WSO2 MB 2.x.x -->
+    <!--Uncomment this and configure as appropriate for JMS transport support with WSO2 EI Broker Profile -->
     <!--transportReceiver name="jms" class="org.apache.axis2.transport.jms.JMSListener">
         <parameter name="myTopicConnectionFactory" locked="false">
            <parameter name="java.naming.factory.initial" locked="false">org.wso2.andes.jndi.PropertiesFileInitialContextFactory</parameter>
